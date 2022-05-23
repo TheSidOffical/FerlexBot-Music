@@ -1,0 +1,22 @@
+{
+  "name": "frowy-bot",
+  "version": "1.0.0",
+  "description": "V13 Frowy Bot",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": "16.x"
+  },
+  "author": "TheSid",
+  "dependencies": {
+    "@discordjs/builders": "^0.13.0",
+    "@discordjs/rest": "^0.4.1",
+    "discord-api-types": "^0.33.0",
+    "discord.js": "^13.7.0",
+    "moment": "^2.29.1",
+    "moment-duration-format": "^2.3.2",
+    "quickmongo": "^5.1.2"
+  }
+}

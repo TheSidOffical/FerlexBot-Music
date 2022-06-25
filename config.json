@@ -1,6 +1,0 @@
-{
-	"token": "Token",
-	"appId": "application ID",
-	"guildId": "Guild ID",
-	"mongourl": "MongoDB URL"
-}

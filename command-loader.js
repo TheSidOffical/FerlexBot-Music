@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const { REST } = require('@discordjs/rest')
 const { Routes } = require('discord-api-types/v9')
-const { appId, guildId, token } = require('./config.json')
+const client = global.client
 
 const commands = []
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
@@ -25,20 +25,17 @@ for (const file of commandFiles) {
   commands.push(command.data.toJSON())
 }
 
-const rest = new REST({ version: '9' }).setToken(token);
+const rest = new REST({ version: '9' }).setToken(client.config.application.token);
 
 (async () => {
   try {
     await rest.put(
-      Routes.applicationGuildCommands(appId, guildId),
+      Routes.applicationCommands(client.config.application.appId, null),
       { body: commands }
     )
 
-    console.log('[Command-Loader] Komutlar yüklendi!')
-    console.log('[Command-Loader] Cache cleared!')
+    console.log('Successfully registered application commands.')
   } catch (error) {
     console.error(error)
   }
 })()
-
-

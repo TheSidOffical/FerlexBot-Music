@@ -1,29 +1,33 @@
 const fs = require('fs')
 const path = require('path')
-const { Client, Collection, MessageEmbed } = require('discord.js')
-const { appId, guildId, token, mongourl } = require('./config.json')
-const client = new Client({ intents: 32639 })
-const { Database } = require('quickmongo')
-const db = global.db = new Database(mongourl);
 
-db.on("ready", () => { console.log("[DATABASE-HANDLER] Connected to the database") });
+const { Client, Collection, Intents, MessageEmbed } = require('discord.js')
+const client = global.client = new Client({ intents: 131071 })
+client.config = require('./config.js');
+
+const { QuickDB } = require("quick.db");
+const db = global.db = new QuickDB({ filePath: `database.sqlite` });
+
+const { Player } = require("discord-player");
+const player = client.player = new Player(client, client.config.options.PlayerSettings);
 
 require("./command-loader.js")
 client.commands = new Collection()
 const commandFiles = []
 
-const getFilesRecursively = (directory) => {
+const getFiles = (directory) => {
   const filesInDirectory = fs.readdirSync(directory)
   for (const file of filesInDirectory) {
     const absolute = path.join(directory, file)
     if (fs.statSync(absolute).isDirectory()) {
-      getFilesRecursively(absolute)
+      getFiles(absolute)
     } else {
       commandFiles.push(absolute)
     }
   }
 }
-getFilesRecursively('./commands/')
+
+getFiles('./commands/')
 
 for (const file of commandFiles) {
   const command = require(`./${file}`)
@@ -41,10 +45,16 @@ for (const file of clientEventFiles) {
     client.on(event.name, (...args) => event.execute(...args))
   }
 }
+const playerEventFiles = fs.readdirSync('./events/player').filter(file => file.endsWith('.js'))
+
+for (const file of playerEventFiles) {
+  const event = require(`./events/player/${file}`)
+    player.on(event.name, (...args) => event.execute(...args))
+}
 
 process.on('uncaughtException', err => {
 	console.error(err)
   })
 
-// Login
-client.login(token)
+
+client.login(client.config.application.token)
